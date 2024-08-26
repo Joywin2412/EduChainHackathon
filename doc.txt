@@ -1,0 +1,4 @@
+Go to file interface2.js
+Copy that file
+contract address will be address where your tokens will Go
+your address from where token will be sent is received by initalizing wallet

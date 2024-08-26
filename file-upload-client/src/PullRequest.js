@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import axios from 'axios'
 import { CloseModal } from "./CloseModal"
+import { Web3InvolvementPR } from "./Web3InvolvementPR"
 
 export const PullRequest = () => {
     const [adding,setAdding] = useState(false)
@@ -12,7 +13,10 @@ export const PullRequest = () => {
     const [openState,setOpenState] = useState(true)
     const confirmHandler = async() => {
         try{
-            await axios.post("http://localhost:5000/pull-requests/add",{issue,tag} ,{
+            await axios.post("http://localhost:5000/pull-requests/add",{issue,tag,
+                name: (localStorage.getItem("name")),
+                walletAddress: (localStorage.getItem("wallet")) 
+            } ,{
                 headers: {
                     "Content-Type": "application/json"
                     // Authorization: `Bearer ${localStorage.getItem("authToken")}`,
@@ -97,7 +101,7 @@ export const PullRequest = () => {
                         <p>{issue.IssueId}</p>
                         <button onClick = {()=>invalidHandler(issue._id)}> Invalid</button>
                         {issue.Status === "Open" && <button onClick = {()=>closeHandler(issue._id)}> Merge</button>}
-
+                        {issue.Status === "Open" && <Web3InvolvementPR walletAddress = {issue.WalletAddress} id = {issue._id} change = {change} setChange = {setChange}/>}
                     </div>
                     );
                 }

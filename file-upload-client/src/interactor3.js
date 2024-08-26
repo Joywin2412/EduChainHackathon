@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import Web3 from 'web3';
-
-const TokenTransfer = () => {
+import axios from 'axios';
+const TokenTransfer = ({walletAddress,id,change,setChange}) => {
   const [recipient, setRecipient] = useState('');
   const [amount, setAmount] = useState('');
   const [web3, setWeb3] = useState(null);
   const [contract, setContract] = useState(null);
   const [account, setAccount] = useState('');
 
-  const contractAddress = "0x87c6f0A0Ea928Bd5eA99dDE2355668Ba4340af57";
+  const contractAddress = walletAddress;
   const contractABI = [
     {
         "anonymous": false,
@@ -78,11 +78,18 @@ const TokenTransfer = () => {
         console.log("Recipient Address:", recipient); // Log recipient to ensure it's correct
         console.log("Sender Address:", account); // Log sender to ensure it's correct
         console.log("Amount (ETH):", amount); // Log amount to ensure it's correct
-
-        await contract.methods.transfer(recipient).send({
+        if(amount !== 0){
+        await contract.methods.transfer(walletAddress).send({
           from: account,
           value: web3.utils.toWei(amount, 'ether')
         });
+        }
+        await axios.post("http://localhost:5000/pull-requests/close",{id} ,{
+          headers: {
+              "Content-Type": "application/json"
+        }
+        })
+        setChange(!change)
         alert("Transfer successful!");
       } catch (error) {
         console.error("Transfer failed", error);
@@ -97,7 +104,7 @@ const TokenTransfer = () => {
       <div>
         <label>
           Recipient Address:
-          <input type="text" value={contractAddress} onChange={(e) => setRecipient(e.target.value)} disabled />
+          <input type="text" value={walletAddress} disabled onChange={(e) => setRecipient(e.target.value)}  />
         </label>
       </div>
       <div>

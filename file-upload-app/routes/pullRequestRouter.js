@@ -6,10 +6,13 @@ const AsyncHandler = require("express-async-handler");
 const pullRequestModel = require('../models/pullRequests.js');
 router.post("/add", AsyncHandler(async (req, res) => {
     try{
-        const {issue,tag} = req.body;
+        const {issue,tag,name,walletAddress} = req.body;
         const new_user = await pullRequestModel.create({
             Code : issue,
             IssueId : tag,
+            Status : "Open",
+            Name : name,
+            WalletAddress : walletAddress
           });
           res.status(200).json(new_user)
         }

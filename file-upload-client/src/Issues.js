@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react"
 import axios from 'axios'
-import { CloseModal } from "./CloseModal"
-import TokenTransfer from "./interactor2"
 
+import { Web3Involvement } from "./Web3Involvement"
 export const Issues = () => {
     const [adding,setAdding] = useState(false)
     const [issue,setIssue] = useState("")
@@ -13,7 +12,10 @@ export const Issues = () => {
     const [openState,setOpenState] = useState(true)
     const confirmHandler = async() => {
         try{
-            await axios.post("http://localhost:5000/issues/add",{issue,tag,number} ,{
+            await axios.post("http://localhost:5000/issues/add",{issue,tag,number,
+                name: (localStorage.getItem("name")),
+                walletAddress: (localStorage.getItem("wallet")) }
+             ,{
                 headers: {
                     "Content-Type": "application/json"
                     // Authorization: `Bearer ${localStorage.getItem("authToken")}`,
@@ -58,19 +60,7 @@ export const Issues = () => {
         }
     }
 
-    const closeHandler = async(id,text) => {
-        try{
-            await axios.post("http://localhost:5000/issues/close",{id,text} ,{
-                headers: {
-                    "Content-Type": "application/json"
-            }
-            })
-            setChange(!change)
-        }
-        catch(err){
-            console.log(err)
-        }
-    }
+    
     useEffect(()=>{
         getIssues();
     },[change,openState])
@@ -96,9 +86,8 @@ export const Issues = () => {
                         <h3>{issue.Issue}</h3>
                         <p>{issue.Tag}</p>
                         The bounty set for this is {issue.Bounty}
-                        <button onClick = {()=>invalidHandler(issue._id)}> Invalid</button>
-                        {issue.Status === "Open" && <CloseModal closeHandler = {closeHandler} id = {issue._id}/>}
-                        <TokenTransfer />
+                        {issue.Status === "Open" && <button onClick = {()=>invalidHandler(issue._id)}> Invalid</button>}
+                        {issue.Status === "Open" && <Web3Involvement  id = {issue._id} setChange = {setChange} change = {change}/>}
                     </div>
                     );
                 }

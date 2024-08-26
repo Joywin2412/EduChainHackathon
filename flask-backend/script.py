@@ -239,7 +239,7 @@ def login_user():
     print(hashed_enroll)
     
     if hashed_auth == hashed_enroll:
-        return jsonify({"message": "Login Successful."})
+        return jsonify({"message": "Login Successful.","wallet" : user_data["walletAddress"]})
     else:
         return "Face recognition failed. Login unsuccessful."
 

@@ -100,6 +100,9 @@ export default function Login() {
           if (responseData.message === "Login Successful.") {
             // If face recognition is successful, set loggedIn to true
             navigate('/')
+            localStorage.setItem('name', name);
+            localStorage.setItem('wallet', responseData.wallet);
+            console.log(name,responseData.wallet)
             setLoggedIn(true);
           } else {
             // If face recognition is unsuccessful, handle the error

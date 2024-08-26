@@ -7,11 +7,13 @@ const issueModel = require('../models/issues.js');
 const pullRequestModel = require("../models/pullRequests.js")
 router.post("/add", AsyncHandler(async (req, res) => {
     try{
-        const {issue,tag,number} = req.body;
+        const {name,walletAddress , issue,tag,number} = req.body;
         const new_user = await issueModel.create({
             Issue : issue,
             Tag : tag,
-            Bounty : number
+            Bounty : number,
+            Name : name,
+            WalletAddress : walletAddress,
           });
           res.status(200).json(new_user)
         }
@@ -54,6 +56,44 @@ router.post("/close", AsyncHandler(async (req, res) => {
             console.log(err)
             res.status(500).json(err)
         }
+})
+);
+
+router.post("/pay", AsyncHandler(async (req, res) => {
+    try{
+        // blockchain reward system + pull request id to reward the user
+        const {id,pull_request_id} = req.body;
+
+        let pull_request_data = await pullRequestModel.findOne({_id : id})
+        let updateMessage = await issueModel.findOne({_id : id})
+          res.status(200).json({
+            bounty : updateMessage.Bounty,
+            walletAddress : updateMessage.WalletAddress
+          })
+        }
+        catch(err)
+        {
+            console.log(err)
+            res.status(500).json(err)
+        }
+})
+);
+
+router.post("/close", AsyncHandler(async (req, res) => {
+  try{
+      // blockchain reward system + pull request id to reward the user
+      const {id} = req.body;
+      console.log(id)
+      let updateMessage = await issueModel.updateOne({_id : id}, {status : "Closed"})
+        res.status(200).json({
+          updateMessage
+        })
+      }
+      catch(err)
+      {
+          console.log(err)
+          res.status(500).json(err)
+      }
 })
 );
 

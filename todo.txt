@@ -1,0 +1,3 @@
+Storage method of blockchain
+Fingerprint authentication for delete , paying
+Fallback method

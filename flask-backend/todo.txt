@@ -1,0 +1,3 @@
+Improve the face encoding thing if possible (use jitters)
+See how different face encodings are for the same face in the same frame. (done)
+Fingerprint thing to be done

@@ -5,14 +5,19 @@ import NavBar from './NavBar';
 import { Route, Routes } from "react-router-dom";
 import { Issues } from './Issues';
 import { PullRequest } from './PullRequest';
+import Signup from './Signup';
+import Login from './Login';
 
 function App() {
   return (
     <div className="App">
     <Routes>
-      <Route path="/issues" element={<><NavBar/> <Issues/></>} />
+        <Route path="/issues" element={<><NavBar/> <Issues/></>} />
         <Route path="/" element={<><NavBar/> <FileUpload/></>} />
-      <Route path="/pull-requests" element={<><NavBar/> <PullRequest/></>} />
+        <Route path="/pull-requests" element={<><NavBar/> <PullRequest/></>} />
+        <Route path="/signup" element={<><NavBar/> <Signup/></>} />
+        <Route path="/login" element={<><NavBar/> <Login/></>} />
+
     </Routes>
   </div>
   );

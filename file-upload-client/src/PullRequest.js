@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import axios from 'axios'
 import { CloseModal } from "./CloseModal"
 import { Web3InvolvementPR } from "./Web3InvolvementPR"
+import { Button, Input, Tab, Tabs, Typography } from "@mui/material"
 
 export const PullRequest = () => {
     const [adding,setAdding] = useState(false)
@@ -79,34 +80,48 @@ export const PullRequest = () => {
         getIssues();
     },[change,openState])
     return (
-        <div>
-            <h2>Pull Request</h2>
-            
-            <div onClick = {(e)=>setOpenState(true)}> Open</div>
-            <div onClick = {(e)=>setOpenState(false)}> Merged </div>
-            <button onClick = {()=>setAdding(true)} > Add </button>
-            {adding ? <>
-                <input type="text" placeholder="Enter Pull Request" value = {issue} onChange = {(e) => setIssue(e.target.value)}/>
-                <input type = "text" placeholder = "Add issue if exists" value = {tag} onChange = {(e) => setTag(e.target.value)}/>
-                <button onClick = {()=>confirmHandler()}> Confirm </button>
-                <button onClick = {()=>setAdding(false)}> Cancel </button>
-                </>
+        <div style = {{ display : "grid" , marginTop : "30px"  }}>
+        <div style = {{justifySelf : "center" , width : "65%"}}>
+        <div style = {{display : "grid" , gridAutoFlow : "column" , gridTemplateColumns : "auto auto"}}>
+        <Tabs
+        value={openState === true ? "true" : "false"}
+        onChange = {(e,value) => setOpenState(value === "true" ? true : false)}
+        aria-label="wrapped label tabs example"
+        >
+        <Tab value="true" label="Open" />
+        <Tab value="false" label="Merged" />
+        </Tabs>
+        <div style = {{display : "flex" , justifyContent : "end"}}>
+        <Button color = "success" variant = "contained" style = {{display : "flex" , justifyContent : "right"}} onClick = {()=>setAdding(true)} > Add </Button>
+        </div>
+        </div>
+             {adding ? <div>
+              <div style = {{display : "grid" , justifyContent : "center" , rowGap : "7px"}}>
+
+                <Input type="text" placeholder="Enter Pull Request" value = {issue} onChange = {(e) => setIssue(e.target.value)}/>
+                <Input type = "text" placeholder = "Add issue if exists" value = {tag} onChange = {(e) => setTag(e.target.value)}/>
+                <Button onClick = {()=>confirmHandler()}> Confirm </Button>
+                <Button onClick = {()=>setAdding(false)}> Cancel </Button>
+                </div>
+                </div>
                  : null}
             {displayIssues.length > 0 ? displayIssues.map((issue) => {
                 if(openState && issue.Status === "Open" || !openState && issue.Status === "Merged"){
                     return (
                     <div key = {issue._id}>
-                        <h3> The id of this pr is {issue._id}</h3>
-                        <h3>{issue.Code}</h3>
-                        <p>{issue.IssueId}</p>
-                        <button onClick = {()=>invalidHandler(issue._id)}> Invalid</button>
-                        {issue.Status === "Open" && <button onClick = {()=>closeHandler(issue._id)}> Merge</button>}
+                    <div >
+                    <Typography variant = "h6"> The id of this pr is {issue._id} </Typography>
+                        <div>Code is <span>{issue.Code}</span> </div>
+                        Issue id is <span>{issue.IssueId}</span>
+                        </div>
+                        <Button variant = "contained" onClick = {()=>invalidHandler(issue._id)}> Invalid</Button>
+                        {issue.Status === "Open" && <Button style = {{marginLeft : "4px"}} variant="contained" color = "secondary" onClick = {()=>closeHandler(issue._id)}> Merge</Button>}
                         {issue.Status === "Open" && <Web3InvolvementPR walletAddress = {issue.WalletAddress} id = {issue._id} change = {change} setChange = {setChange}/>}
                     </div>
                     );
                 }
 }): null}
-
+        </div>
         </div>
     )
 }

@@ -1,3 +1,4 @@
+import { Button, Input } from "@mui/material"
 import { useState } from "react"
 
 export const CloseModal = ({closeHandler,id}) => {
@@ -8,9 +9,9 @@ export const CloseModal = ({closeHandler,id}) => {
     return (
         <div>
             {close === false && <>
-            <input type = "text" onChange = {(e)=> setPullRequestText(e.target.value)} value = {pullRequestText} placeholder="Mention the pull request id" />
-            <button onClick = {()=>closeHandler(id,pullRequestText)}> Submit </button>
-            <button onClick = {()=>setClose(true)}> Close</button>
+            <Input type = "text" onChange = {(e)=> setPullRequestText(e.target.value)} value = {pullRequestText} placeholder="Pull request id" />
+            <Button onClick = {()=>closeHandler(id,pullRequestText)}> Submit </Button>
+            <Button variant = "contained" color = "error" onClick = {()=>setClose(true)}> Close</Button>
             </>
         }
             

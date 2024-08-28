@@ -13,10 +13,8 @@ from pymongo.server_api import ServerApi
 from sklearn.decomposition import PCA
 
 # use it later
-from imgaug import augmenters as iaaz
 
 # ica
-from sklearn.decomposition import FastICA
 
 import subprocess
 
@@ -29,9 +27,9 @@ joywin_uri = "mongodb+srv://joy:ryHVuNxW2ATaMtyy@cluster0.vffdptk.mongodb.net/Ed
 uri = joywin_uri
 
 from tensorflow.keras.models import load_model
-# model = load_model('model.keras')
-# from keras.models import Model
-# second_last_layer_model = Model(inputs=model.input, outputs=model.layers[-2].output)
+model = load_model('fingerprintModelNew.keras')
+from keras.models import Model
+second_last_layer_model = Model(inputs=model.input, outputs=model.layers[-2].output)
 
 client = MongoClient(uri, server_api=ServerApi('1'))
 
@@ -77,61 +75,72 @@ def register_face():
     
 
 
-# @app.route('/inputFinger', methods=['GET'])
-# def input_Finger():
-#     print("Finger")
-#     exe_path = 'C:\\Program Files\\Mantra\\MFS100\\Driver\\MFS100Test\\MANTRA.MFS100.Test.exe'
+@app.route('/inputFinger', methods=['GET'])
+def input_Finger():
+    print("Finger")
+    exe_path = 'C:\\Program Files\\Mantra\\MFS100\\Driver\\MFS100Test\\MANTRA.MFS100.Test.exe'
 
-#     try:
-#         subprocess.run(f'"{exe_path}"', shell=True)
+    try:
+        subprocess.run(f'"{exe_path}"', shell=True)
 
-#     except Exception as e:
-#         print(f"An error occurred: {str(e)}")
+    except Exception as e:
+        print(f"An error occurred: {str(e)}")
 
-#     return "yo"
+    return "yo"
 
 from tensorflow.keras.models import Model
 import keras
-# model = keras.models.load_model('fingerprint_model.keras')
 
-# @app.route('/registerFinger', methods=['GET'])
-# def register_Finger():
-    # try:
-        # minitae points
-        # fingerprint_database_image = cv2.imread("download.jpeg")
-        # fingerprint_database_image = cv2.cvtColor(fingerprint_database_image, cv2.COLOR_BGR2GRAY)
-        # fingerprint_database_image = cv2.resize(fingerprint_database_image, (160, 160))
-        # fingerprint_database_image = fingerprint_database_image.reshape(-1, 160, 160, 1).astype('float32') / 255.0
-        # global model
-        # # Predict the fingerprint features
-        # x = model.layers[-2].output
-        # model = Model(inputs=model.inputs, outputs=x)
-        # # fingerprint_database_image2 = cv2.imread("now.
-        # # fingerprint_database_image2 = cv2.cvtColor(fingerprint_database_image2, cv2.COLOR_BGR2GRAY)
-        # # fingerprint_database_image2 = cv2.resize(fingerprint_database_image2, (160, 160))
-        # # fingerprint_database_image2 = fingerprint_database_image2.reshape(-1, 160, 160, 1).astype('float32') / 255.0
-        
-        # fc2 = model.predict(fingerprint_database_image)
-        # print(fc2[0][:20])
-        # return jsonify({"fingerprint_encodings":fc2[0].tolist()})
-        # sift = cv2.SIFT_create()
-        
-        # keypoints_1, descriptors_1 = sift.detectAndCompute(fingerprint_database_image, None)
-        
-        # descriptors_list = descriptors_1.tolist()
+@app.route('/registerFinger', methods=['GET'])
+def register_Finger():
+    try:
+        # image from fingerprint 
+        img_size = 96
+        img_array = cv2.imread('C:\Program Files\Mantra\MFS100\Driver\MFS100Test\FingerData\FingerImage.bmp', cv2.IMREAD_GRAYSCALE)
+        img_resize = cv2.resize(img_array, (img_size, img_size))
+        X_now = []
+        X_now.append(img_resize)
+        X_now = np.array(X_now).reshape(-1, img_size, img_size, 1)
+        second_last_output = second_last_layer_model.predict(X_now)
 
-        # # Create a document with keypoints and descriptors
-        # fingerprint_data = {
-        #     "keypoints": [{"x": kp.pt[0], "y": kp.pt[1], "size": kp.size, "angle": kp.angle, "response": kp.response, "octave": kp.octave, "class_id": kp.class_id} for kp in keypoints_1],
-        #     "descriptors": descriptors_list
-        # }
 
     # Return the fingerprint data
-        # return jsonify(fingerprint_data)
+        return jsonify({"fingerprint_encodings":second_last_output[0].tolist()})
 
-    # except Exception as e:
-    #     print("Hello")
-    #     return jsonify({"error": str(e)})
+    except Exception as e:
+        print("Hello")
+        return jsonify({"error": str(e)})
+    
+from sklearn.metrics.pairwise import cosine_similarity
+
+@app.route('/verifyFinger', methods=['POST'])
+def register_Finger2():
+    try:
+        user_data_came = request.get_json()
+        name_now = user_data_came['name']
+        user_data = users_collection.find_one({"name": name_now})
+
+        # image from fingerprint 
+        img_size = 96
+        img_array = cv2.imread('C:\Program Files\Mantra\MFS100\Driver\MFS100Test\FingerData\FingerImage.bmp', cv2.IMREAD_GRAYSCALE)
+        img_resize = cv2.resize(img_array, (img_size, img_size))
+        X_now = []
+        X_now.append(img_resize)
+        X_now = np.array(X_now).reshape(-1, img_size, img_size, 1)
+        second_last_output = second_last_layer_model.predict(X_now)
+        fingerprint_encodings_now = second_last_output[0].tolist()
+        fingerprint_encodings = user_data["fingerData"]
+        distance =   cosine_similarity([fingerprint_encodings], [fingerprint_encodings_now])[0][0]
+        print(distance)
+    # Return the fingerprint data
+        if(distance >= 0.65):
+            return jsonify({"message":"Verified"})
+        else:
+            return jsonify({"message":"Not Verified"})
+
+    except Exception as e:
+        print("Hello")
+        return jsonify({"error": str(e)})
     
     
 @app.route('/registerUser', methods=['POST'])
@@ -179,6 +188,7 @@ def register_user():
         obj['hash'] = hashed
         obj['xor'] = xr
         obj['walletAddress'] = user_data["walletAddress"]
+        obj['fingerData'] = user_data["fingerData"]
         result = users_collection.insert_one(obj)
         if result.acknowledged:
             return jsonify({"message": "User data stored in MongoDB."})
@@ -246,4 +256,4 @@ def login_user():
 
 # Example usage
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True,port = 5001)

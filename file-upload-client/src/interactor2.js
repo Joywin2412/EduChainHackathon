@@ -1,14 +1,38 @@
 import React, { useState } from 'react';
 import Web3 from 'web3';
+import axios from 'axios';
+import WalletIcon from '@mui/icons-material/Wallet';
+import { Button } from '@mui/material';
+import QrCodeScannerIcon from '@mui/icons-material/QrCodeScanner';
+import Input from '@mui/material/Input';
+import PaidIcon from '@mui/icons-material/Paid';
 
 const TokenTransfer = () => {
-  const [recipient, setRecipient] = useState('');
+  const contractAddress = "0x87c6f0A0Ea928Bd5eA99dDE2355668Ba4340af57";
+
+  const [recipient, setRecipient] = useState(contractAddress);
   const [amount, setAmount] = useState('');
   const [web3, setWeb3] = useState(null);
   const [contract, setContract] = useState(null);
   const [account, setAccount] = useState('');
+  const [verified, setVerified] = useState("Not verified");
+  const fingerprintHandler = async () => {
+    try{
+      let data = await axios.post('http://localhost:5001/verifyFinger',{"name" : localStorage.getItem('name')},{
+        headers : {
+          "Content-Type" : "application/json"
+        }
+      })
 
-  const contractAddress = "0x87c6f0A0Ea928Bd5eA99dDE2355668Ba4340af57";
+      setVerified(data.data.message)
+    }
+    catch(err)
+    {
+      console.log(err)
+      
+    }
+  }
+
   const contractABI = [
     {
         "anonymous": false,
@@ -88,25 +112,47 @@ const TokenTransfer = () => {
         console.error("Transfer failed", error);
       }
     }
+    else{
+      console.log("helo")
+    }
   };
 
   return (
-    <div>
-      <h2>Token Transfer</h2>
-      <button onClick={initWeb3}>Connect Wallet</button>
-      <div>
-        <label>
-          Recipient Address:
-          <input type="text" value={contractAddress} onChange={(e) => setRecipient(e.target.value)} disabled />
-        </label>
+    <div style = {{ marginLeft : "100px" , marginTop : "25px"}}>
+    <div style = {{display : "flex",alignItems : "center", justifyContent : "center",}}>
+      <QrCodeScannerIcon />
+      <h3>Sponsor</h3>
       </div>
-      <div>
-        <label>
-          Amount (ETH):
-          <input type="text" value={amount} onChange={(e) => setAmount(e.target.value)} />
-        </label>
+      <Button startIcon = {<WalletIcon/>} onClick={initWeb3}>Connect Wallet</Button>
+
+      <div style = {{display : "grid", marginTop : "20px" , gridAutoFlow : "column", columnGap : "5px"  }}>
+      <div style = {{display : "grid" , rowGap : "7px"}}>
+      <span >
+      Recipient Address
+      </span>
+      <span >
+      Amount (ETH)
+      </span>
+      
+
+      <span >
+      Finger verification
+      </span>
       </div>
-      <button onClick={handleTransfer}>Transfer</button>
+      
+      <div style = {{display : "grid" , rowGap : "7px"}}>
+       
+          <Input type="text" value={contractAddress} onChange={(e) => setRecipient(e.target.value)} disabled />
+
+          <Input type="text" value={amount} onChange={(e) => setAmount(e.target.value)} />
+
+          <div>
+        <Input type="text" value={verified} disabled />
+        <Button onClick = {()=>fingerprintHandler()}> Verify </Button>
+        </div>
+      </div>
+      </div>
+      <Button startIcon = {<PaidIcon/>} style = {{marginTop : "10px"}} onClick={handleTransfer}>Transfer</Button>
     </div>
   );
 };

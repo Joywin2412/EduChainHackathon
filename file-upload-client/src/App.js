@@ -10,7 +10,7 @@ import Login from './Login';
 
 function App() {
   return (
-    <div className="App">
+    <div style = {{}} className="App">
     <Routes>
         <Route path="/issues" element={<><NavBar/> <Issues/></>} />
         <Route path="/" element={<><NavBar/> <FileUpload/></>} />

@@ -1,3 +1,4 @@
+import { Button, Input } from '@mui/material';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -128,11 +129,11 @@ export default function Login() {
 
   return (
     <>
-        <>
+        <div style = {{marginTop : "10px"}}>
 
           <div className="form-group">
             <label>Enter your name</label>
-            <input
+            <Input
               type="text"
               name="name"
               className="form-control"
@@ -142,27 +143,27 @@ export default function Login() {
             />
           </div>
           <div className="form-group">
-            <button
+            <Button
               onClick={() => {
                 registerFace();
               }}
               className="btn btn-primary"
             >
               Take my Picture
-            </button>
+            </Button>
           </div>
          
           <div className="form-group">
-            <button
+            <Button
               onClick={() => {
                 login();
               }}
               className="btn btn-primary"
             >
               LogIn
-            </button>
+            </Button>
           </div>
-        </>
+        </div>
       
     </>
   );

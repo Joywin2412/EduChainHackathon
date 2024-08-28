@@ -6,4 +6,5 @@ __pycache__
 *.keras
 *.ipynb
 *.json
+env/
 # *.pickl

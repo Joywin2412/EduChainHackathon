@@ -1,11 +1,16 @@
+import { Button, IconButton, Input } from '@mui/material';
 import React, { useState } from 'react';
 import Web3 from 'web3';
+import Fingerprint from '@mui/icons-material/Fingerprint';
 
-export default function Signup() {
+
+export default function Register() {
   const [name, setName] = useState(null);
   const [faceEncodings, setFaceEncodings] = useState(null);
   const [fingerData, setFingerData] = useState(null);
-    const [account, setAccount] = useState(''); 
+  const [account, setAccount] = useState(''); 
+
+
 
   const registerFace = async () => {
     try {
@@ -30,16 +35,73 @@ export default function Signup() {
     }
   }
 
+  const initWeb3 = async () => {
+    if (window.ethereum) {
+      try {
+        await window.ethereum.request({ method: 'eth_requestAccounts' });
+        const web3Instance = new Web3(window.ethereum);
+
+        const accounts = await web3Instance.eth.getAccounts();
+        console.log(accounts)
+        setAccount(accounts[0]);
+
+       
+      } catch (error) {
+        console.error("Failed to load web3, accounts, or contract.", error);
+      }
+    }
+  };
+
+  const inputFinger = async () => {
+    try {
+      const response = await fetch("http://127.0.0.1:5001/inputFinger", {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+    }
+    catch (error) {
+      console.error(error);
+    }
+  }
+
+  const registerFinger = async () => {
+    try {
+      const response = await fetch("http://127.0.0.1:5001/registerFinger", {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      const data = await response.json(); // Parse the JSON response
+      console.log(data); // Log the message
+      setFingerData(data.fingerprint_encodings) // Update the resultStatus state
+    }
+    catch (error) {
+      console.error(error);
+    }
+  }
+
   const register = async () => {
     try {
       // Check if name, faceEncodings, and fingerData are available
-      if (name && faceEncodings) {
+      if (name && faceEncodings && fingerData) {
         // Create an object with user data
         const userData = {
           name: name,
           faceEncodings: faceEncodings,
           fingerData: fingerData,
-            walletAddress: account
+          walletAddress : account
         };
 
         // Make a POST request to the backend to store the user data
@@ -67,29 +129,14 @@ export default function Signup() {
     }
   };
 
-  const initWeb3 = async () => {
-    if (window.ethereum) {
-      try {
-        await window.ethereum.request({ method: 'eth_requestAccounts' });
-        const web3Instance = new Web3(window.ethereum);
-
-        const accounts = await web3Instance.eth.getAccounts();
-        console.log(accounts)
-        setAccount(accounts[0]);
-
-       
-      } catch (error) {
-        console.error("Failed to load web3, accounts, or contract.", error);
-      }
-    }
-  };
 
   return (
     <>
 
-      <div className="form-group">
+      <div style = {{marginTop : "10px" }} className="form-group" >
         <label>Enter your name</label>
-        <input
+        <Input
+        style = {{marginLeft : "5px"}}
           type="text"
           name="name"
           className="form-control"
@@ -98,32 +145,46 @@ export default function Signup() {
           }}
         />
       </div>
-      <button onClick = {()=>initWeb3()}> Connect your wallet</button>
+      <Button onClick = {()=>initWeb3()}> Connect your wallet</Button>
       <div>
       <label>
-      Your wallet address:
+      Your wallet address
       </label>
-      <input disabled type="text" value={account} />
+      <Input disabled type="text" value={account}         style = {{marginLeft : "5px"}}
+      />
       </div>
       <div className="form-group">
-        <button
+        <Button
           onClick={() => {
             registerFace();
           }}
           className="btn btn-primary"
         >
           Take my Picture
-        </button>
+        </Button>
       </div>
       <div className="form-group">
-        <button
+      <IconButton aria-label="fingerprint" color="secondary">
+      <Fingerprint />
+    </IconButton>
+        <Button
+          onClick={() => {
+            registerFinger();
+          }}
+          className="btn btn-primary"
+        >
+          Store
+        </Button>
+      </div>
+      <div className="form-group">
+        <Button
           onClick={() => {
             register();
           }}
           className="btn btn-primary"
         >
           Submit
-        </button>
+        </Button>
       </div>
     </>
   )

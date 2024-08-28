@@ -1,3 +1,4 @@
-Storage method of blockchain
-Fingerprint authentication for delete , paying
+Storage method of blockchain (done)
+Fingerprint authentication for delete , paying (done)
 Fallback method
+Check requirements

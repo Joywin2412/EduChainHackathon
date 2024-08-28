@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import axios from 'axios'
 
 import { Web3Involvement } from "./Web3Involvement"
+import { Button, Input, Tab, Tabs, Typography } from "@mui/material"
 export const Issues = () => {
     const [adding,setAdding] = useState(false)
     const [issue,setIssue] = useState("")
@@ -65,34 +66,47 @@ export const Issues = () => {
         getIssues();
     },[change,openState])
     return (
-        <div>
-            <h2>Issues</h2>
-            
-            <div onClick = {(e)=>setOpenState(true)}> Open</div>
-            <div onClick = {(e)=>setOpenState(false)}> Close </div>
-            <button onClick = {()=>setAdding(true)} > Add </button>
+        <div style = {{ display : "grid" , marginTop : "30px"  }}>
+        <div style = {{justifySelf : "center" , width : "65%"}}>
+        <div style = {{display : "grid" , gridAutoFlow : "column" , gridTemplateColumns : "auto auto"}}>
+            <Tabs
+            value={openState === true ? "true" : "false"}
+            onChange = {(e,value) => setOpenState(value === "true" ? true : false)}
+            aria-label="wrapped label tabs example"
+            >
+            <Tab value="true" label="Open" />
+            <Tab value="false" label="Close" />
+        </Tabs>
+        <div style = {{display : "flex" , justifyContent : "end"}}>
+        <Button color = "success" variant = "contained" style = {{display : "flex" , justifyContent : "right"}} onClick = {()=>setAdding(true)} > Add </Button>
+        </div>
+        </div>
             {adding ? <>
-                <input type="text" placeholder="Enter Issue" value = {issue} onChange = {(e) => setIssue(e.target.value)}/>
-                <input type = "text" placeholder = "Add tag" value = {tag} onChange = {(e) => setTag(e.target.value)}/>
-                <input type = "number" placeholder = "Enter bounty" value = {number} onChange = {(e) => setNumber(e.target.value)}/>
-                <button onClick = {()=>confirmHandler()}> Confirm </button>
-                <button onClick = {()=>setAdding(false)}> Cancel </button>
+                <div style = {{display : "grid" , justifyContent : "center" , rowGap : "7px"}}>
+                <Input type="text" placeholder="Enter Issue" value = {issue} onChange = {(e) => setIssue(e.target.value)}/>
+                <Input type = "text" placeholder = "Add tag" value = {tag} onChange = {(e) => setTag(e.target.value)}/>
+                <Input type = "number" placeholder = "Enter bounty" value = {number} onChange = {(e) => setNumber(e.target.value)}/>
+                <Button onClick = {()=>confirmHandler()}> Confirm </Button>
+                <Button onClick = {()=>setAdding(false)}> Cancel </Button>
+                </div>
                 </>
                  : null}
             {displayIssues.length > 0 ? displayIssues.map((issue) => {
                 if(openState && issue.Status === "Open" || !openState && issue.Status === "Closed"){
                     return (
-                    <div key = {issue._id}>
-                        <h3>{issue.Issue}</h3>
-                        <p>{issue.Tag}</p>
-                        The bounty set for this is {issue.Bounty}
-                        {issue.Status === "Open" && <button onClick = {()=>invalidHandler(issue._id)}> Invalid</button>}
+                    <>
+                    <div style = {{display : "flex", justifyContent : "center" , alignItems : "center"}} key = {issue._id}>
+                        <Typography variant = "h6"> {issue.Issue}</Typography>
+                        <Button disabled>{issue.Tag}</Button>
+                        <Button disabled> {issue.Bounty}</Button>
+                        </div>
+                        {issue.Status === "Open" && <Button color = "secondary" variant= "contained" onClick = {()=>invalidHandler(issue._id)}> Invalid</Button>}
                         {issue.Status === "Open" && <Web3Involvement  id = {issue._id} setChange = {setChange} change = {change}/>}
-                    </div>
+                        </>
                     );
                 }
 }): null}
-
+        </div>
         </div>
     )
 }

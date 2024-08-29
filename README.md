@@ -1,8 +1,7 @@
 # GitBlockHub
 
 🎥 **Demo Video**  
-<video src='https://github.com/user-attachments/assets/7d475b5c-7040-4b65-a5c4-d3a7a7780901
-' width=180></video>
+<video src='https://github.com/user-attachments/assets/b6a1fc5a-0d85-46bf-b17e-cb31b1aacd46' width=180></video>
 
 ## 🚀 Revolutionizing Open-Source with Blockchain
 

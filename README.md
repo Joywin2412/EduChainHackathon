@@ -1,10 +1,3 @@
-
-
-https://github.com/user-attachments/assets/7d475b5c-7040-4b65-a5c4-d3a7a7780901
-
-
----
-
 # GitBlockHub
 
 🎥 **Demo Video**  
